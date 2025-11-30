@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Inventory</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-container {
+            padding-top: 150px;
+            width: 90%;
+            margin: 0 auto;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .admin-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+            margin-bottom: 30px;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-table th {
+            background: var(--accent);
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .admin-table td {
+            font-size: 0.9rem;
+        }
+
+        .action-link {
+            margin-right: 15px;
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        .action-link:hover {
+            color: var(--primary);
+        }
+
+        .add-btn {
+            background: var(--primary);
+            color: black;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .delete-form {
+            display: inline;
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: darkred;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo"><a href="/"><img src="/static/assets/Logo.png" alt="GamerZ"></a></div>
+        <div class="user-profile"><a href="/logout"
+                style="color: #ff4444; font-size: 1.1rem; text-decoration: none;">ADMIN LOGOUT</a></div>
+    </header>
+
+    <div class="admin-container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-msg"
+            style="background: rgba(0, 255, 65, 0.2); color: white; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+            {{ messages[0] }}</div>
+        {% endif %}
+        {% endwith %}
+        <h1 class="admin-title">Inventory Management</h1>
+        <a href="{{ url_for('admin_add') }}" class="add-btn">Add New Game</a>
+
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Genre</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in games %}
+                <tr>
+                    <td>{{ game.id }}</td>
+                    <td>{{ game.title }}</td>
+                    <td>${{ game.price }}</td>
+                    <td>{{ game.genre }}</td>
+                    <td>
+                        <a href="{{ url_for('admin_edit', game_id=game.id) }}" class="action-link">Edit</a>
+                        <form method="POST" action="{{ url_for('admin_delete', game_id=game.id) }}" class="delete-form">
+                            <button type="submit" class="delete-btn"
+                                onclick="return confirm('Are you sure you want to delete {{ game.title }}?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

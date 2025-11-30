@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GamerZ - The Ultimate Store</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600;400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/static/style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <h2 style="font-family: 'Orbitron', sans-serif; margin-top: 20px; color: var(--primary);">LOADING SYSTEM...</h2>
+    </div>
+
+    <header>
+        <div class="logo">
+            <a href="/"><img src="/static/assets/Logo.png" alt="GamerZ Logo"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search games..."><i
+                class="fa-solid fa-magnifying-glass"></i>
+            <div id="search-results" class="search-results-dropdown"></div>
+        </div>
+        <div class="torch-toggle" id="themeToggle" title="Toggle Light Mode"><i
+                class="fa-solid fa-fire-flame-curved"></i></div>
+        <a href="/cart" class="cart-wrapper"><i class="fa-solid fa-cart-shopping"></i><span id="cart-count">0</span></a>
+        {% if session.get('username') %}
+        <div style="display: flex; align-items: center;">
+            <a href="/profile" class="user-profile"
+                style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                {% if session.get('profile_photo') %}
+                <img src="/static/uploads/{{ session.get('profile_photo') }}" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                {% else %}
+                <i class="fa-regular fa-user"></i>
+                {% endif %}
+                <span style="font-size: 0.9rem; font-family: 'Rajdhani', sans-serif;">{{ session.get('username')
+                    }}</span>
+            </a>
+            <a href="/logout"
+                style="margin-left: 15px; font-size: 0.9rem; color: #ff4444; text-decoration: none; font-family: 'Rajdhani', sans-serif;">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+        {% else %}
+        <a href="/login" class="user-profile" style="text-decoration: none;">
+            <i class="fa-solid fa-user"></i><span style="margin-left: 8px;">Login</span>
+        </a>
+        {% endif %}
+    </header>
+
+    <div class="main-container">
+
+        <section id="promotion-bar-wrapper">
+
+            <div id="hero-carousel">
+                {% for slide in featured_slides %}
+                <div class="slide" style="background-image: url('{{ slide.image }}');" data-index="{{ loop.index0 }}">
+                    <div class="slide-content">
+                        <span class="slide-subtitle">{{ slide.subtitle }}</span>
+                        <h2>{{ slide.title }}</h2>
+                        <p>{{ slide.tagline }}</p>
+                        <a href="{{ slide.link }}" class="action-btn">
+                            {{ 'PRE-ORDER NOW' if 'Postponed' in slide.subtitle else 'SHOP NOW' }}
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                <button class="prev-btn">‹</button>
+                <button class="next-btn">›</button>
+                <div class="carousel-nav">
+                    <div class="dot-navigation"></div>
+                </div>
+            </div>
+
+            <aside class="sidebar-right promotion-sidebar">
+                <h3>Categories</h3>
+                <ul>
+                    <li>Action RPG</li>
+                    <li>Survival Horror</li>
+                    <li>Open World</li>
+                    <li>Strategy</li>
+                    <li>Indie</li>
+                </ul>
+            </aside>
+        </section>
+
+        <div id="dynamic-category-container"></div>
+
+        <section class="trending-section">
+            <div class="section-header">
+                <h2>Trending Now <span style="color:var(--primary)">.</span></h2>
+                <a href="#" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <main class="scroll-container" id="scrollContainer">
+                {% for game in games %}
+                <div class="game-card" data-category="{{ game.genre }}">
+                    <div class="media-wrapper">
+                        <a href="/game/{{ game.id }}">
+                            <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                            <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                        </a>
+                    </div>
+                    <div class="game-info">
+                        <h3>{{ game.title }}</h3>
+                        <p class="price">${{ game.price }}</p>
+                        <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </main>
+        </section>
+
+
+
+        {% if editions %}
+        <section class="trending-section">
+            <div class="section-header">
+                <h2>Special Editions <span style="color:var(--primary)">.</span></h2>
+                <a href="#" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <main class="scroll-container">
+                {% for game in editions %}
+                <div class="game-card" data-category="{{ game.genre }}">
+                    <div class="media-wrapper">
+                        <a href="/game/{{ game.id }}">
+                            <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                            <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                        </a>
+                    </div>
+                    <div class="game-info">
+                        <h3>{{ game.title }}</h3>
+                        <p class="price">${{ game.price }}</p>
+                        <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </main>
+        </section>
+        {% endif %}
+
+        <section class="trending-section">
+            <div class="section-header">
+                <h2>Explore PS5 Games <span style="color:var(--primary)">.</span></h2>
+                <a href="#" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <main class="scroll-container">
+                {% for game in games %}
+                <div class="game-card">
+                    <div class="media-wrapper">
+                        <a href="/game/{{ game.id }}">
+                            <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                            <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                        </a>
+                    </div>
+                    <div class="game-info">
+                        <h3>{{ game.title }}</h3>
+                        <p class="price">${{ game.price }}</p>
+                        <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </main>
+        </section>
+
+        <section class="trending-section">
+            <div class="section-header">
+                <h2>Explore PC Games <span style="color:var(--primary)">.</span></h2>
+                <a href="#" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <main class="scroll-container">
+                {% for game in games %}
+                {% if game.title in ['Grand Theft Auto V', 'Elden Ring', 'God of War Ragnarok'] %}
+                <div class="game-card">
+                    <div class="media-wrapper">
+                        <a href="/game/{{ game.id }}">
+                            <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                            <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                        </a>
+                    </div>
+                    <div class="game-info">
+                        <h3>{{ game.title }}</h3>
+                        <p class="price">${{ game.price }}</p>
+                        <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </main>
+        </section>
+
+
+        {% if dlcs %}
+        <section class="trending-section">
+            <div class="section-header">
+                <h2>DLCs & Expansions <span style="color:var(--primary)">.</span></h2>
+                <a href="#" class="view-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <main class="scroll-container">
+                {% for game in dlcs %}
+                <div class="game-card" data-category="{{ game.genre }}">
+                    <div class="media-wrapper">
+                        <a href="/game/{{ game.id }}">
+                            <img src="{{ game.image }}" alt="{{ game.title }}" class="game-cover">
+                            <video src="{{ game.trailer }}" muted loop class="game-trailer"></video>
+                        </a>
+                    </div>
+                    <div class="game-info">
+                        <h3>{{ game.title }}</h3>
+                        <p class="price">${{ game.price }}</p>
+                        <button class="buy-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </main>
+        </section>
+        {% endif %}
+    </div>
+
+    <div class="chatbot-container">
+        <div class="chatbot-icon" onclick="toggleChat()"><i class="fa-solid fa-robot"></i></div>
+        <div class="chatbot-window" id="chatWindow">
+            <div class="chat-header" style="display: flex; justify-content: space-between;">
+                <span>GamerZ AI Assistant</span>
+                <i class="fa-solid fa-xmark close-btn" onclick="toggleChat()"></i>
+            </div>
+            <div class="chat-body" id="chatBody">
+                <div class="bot-message">Hello! I'm powered by AI. Ask me about specs or recommendations!</div>
+            </div>
+            <div class="chat-input-area"><input type="text" id="userInput" placeholder="Type a message..."
+                    onkeypress="handleEnter(event)"><button onclick="sendMessage()"><i
+                        class="fa-solid fa-paper-plane"></i></button></div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

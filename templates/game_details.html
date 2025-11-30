@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ game.title }} - GamerZ</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- PAGE SPECIFIC OVERRIDES --- */
+
+        .details-container {
+            display: flex;
+            height: 100vh;
+            padding-top: 200px;
+            padding-left: 5%;
+            padding-right: 5%;
+            gap: 50px;
+            align-items: center;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        /* 1. THE VIDEO BOX CONTAINER */
+        .visual-column {
+            flex: 1;
+            height: 60vh;
+            background: #000;
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 2. THE VIDEO ELEMENT ITSELF */
+        .visual-column video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain !important;
+            pointer-events: none;
+        }
+
+        /* Right Side Info */
+        .info-column {
+            flex: 1;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .game-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .badges {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--secondary);
+            font-weight: bold;
+        }
+
+        .description {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: #ccc;
+        }
+
+        .price-tag {
+            font-size: 2.5rem;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Button Styles */
+        .buy-now-btn {
+            background: var(--primary);
+            border: none;
+            color: black;
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 0 0 20px var(--primary);
+            transition: 0.3s;
+        }
+
+        .buy-now-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid white;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <header>
+        <div class="logo"><a href="/"><img src="/static/assets/Logo.png" alt="GamerZ"></a></div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search games...">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+
+        <div class="torch-toggle" id="themeToggle" title="Toggle Light Mode">
+            <i class="fa-solid fa-fire-flame-curved"></i>
+        </div>
+
+        <a href="/cart" class="cart-wrapper">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="cart-count">0</span>
+        </a>
+
+        {% if session.get('username') %}
+        <div style="display: flex; align-items: center;">
+            <a href="/profile" class="user-profile"
+                style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                {% if session.get('profile_photo') %}
+                <img src="/static/uploads/{{ session.get('profile_photo') }}" alt="Profile"
+                    style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                {% else %}
+                <i class="fa-regular fa-user"></i>
+                {% endif %}
+                <span style="font-size: 0.9rem; font-family: 'Rajdhani', sans-serif;">{{ session.get('username')
+                    }}</span>
+            </a>
+            <a href="/logout"
+                style="margin-left: 15px; font-size: 0.9rem; color: #ff4444; text-decoration: none; font-family: 'Rajdhani', sans-serif;"
+                title="Logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+        {% else %}
+        <a href="/login" class="user-profile" style="text-decoration: none;">
+            <i class="fa-solid fa-user"></i><span style="margin-left: 8px;">Login</span>
+        </a>
+        {% endif %}
+    </header>
+
+    <div class="details-container">
+        <div class="visual-column">
+            <video src="{{ game.trailer }}" autoplay muted loop></video>
+        </div>
+
+        <div class="info-column">
+            <h1 class="game-title">{{ game.title }}</h1>
+
+            <div class="badges">
+                <span class="badge">{{ game.genre }}</span>
+                <span class="badge">{{ game.rating }}</span>
+                <span class="badge">PC / PS5</span>
+            </div>
+
+            <p class="description">{{ game.description }}</p>
+
+            <div class="price-tag">${{ game.price }}</div>
+
+            <div class="action-buttons">
+                <button class="buy-now-btn" onclick="addToCart(Number('{{ game.id }}'))">Add to Cart</button>
+                <a href="/" class="back-btn">Back to Store</a>
+            </div>
+        </div>
+    </div>
+
+
+    {% if extras %}
+    <div class="extras-container">
+        {% if extras.dlcs %}
+        <div class="extras-category">
+            <h2>DLCs & Expansions</h2>
+            <div class="extras-grid">
+                {% for item in extras.dlcs %}
+                <div class="extra-card">
+                    {% if item.image %}
+                    <img src="{{ item.image }}" alt="{{ item.title }}">
+                    {% endif %}
+                    <div class="extra-info">
+                        <h4>{{ item.title }}</h4>
+                        <p>{{ item.desc }}</p>
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                            <span class="extra-price">${{ item.price }}</span>
+
+                            {% if game.id in owned_game_ids %}
+                            <button class="buy-now-btn" onclick="addToCart('{{ item.id }}')"
+                                style="padding: 5px 15px; font-size: 0.8rem; width: auto; margin-top: 0;">
+                                Add
+                            </button>
+                            {% else %}
+                            <span style="color: #ff4444; font-size: 0.8rem; font-weight: bold;">Base Game
+                                Required</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if extras.editions %}
+        <div class="extras-category">
+            <h2>Editions</h2>
+            <div class="extras-grid">
+                {% for item in extras.editions %}
+                <div class="extra-card">
+                    <div class="extra-info">
+                        <h4>{{ item.title }}</h4>
+                        <p>{{ item.desc }}</p>
+                        <div <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                            <span class="extra-price">${{ item.price }}</span>
+                            <button class="buy-now-btn" onclick="addToCart('{{ item.id }}')"
+                                style="padding: 5px 15px; font-size: 0.8rem; width: auto; margin-top: 0;">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if extras.addons %}
+        <div class="extras-category">
+            <h2>Add-ons</h2>
+            <div class="extras-grid">
+                {% for item in extras.addons %}
+                <div class="extra-card">
+                    <div class="extra-info">
+                        <h4>{{ item.title }}</h4>
+                        <p>{{ item.desc }}</p>
+                        <span class="extra-price">{{ item.price }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if extras.specs %}
+        <div class="extras-category">
+            <h2>System Requirements</h2>
+            <div class="specs-container">
+                <div class="specs-column">
+                    <h3>Minimum</h3>
+                    <ul>
+                        <li><strong>OS:</strong> {{ extras.specs.min.os }}</li>
+                        <li><strong>Processor:</strong> {{ extras.specs.min.cpu }}</li>
+                        <li><strong>Memory:</strong> {{ extras.specs.min.ram }}</li>
+                        <li><strong>Graphics:</strong> {{ extras.specs.min.gpu }}</li>
+                        <li><strong>Storage:</strong> {{ extras.specs.min.storage }}</li>
+                    </ul>
+                </div>
+                <div class="specs-column">
+                    <h3>Recommended</h3>
+                    <ul>
+                        <li><strong>OS:</strong> {{ extras.specs.rec.os }}</li>
+                        <li><strong>Processor:</strong> {{ extras.specs.rec.cpu }}</li>
+                        <li><strong>Memory:</strong> {{ extras.specs.rec.ram }}</li>
+                        <li><strong>Graphics:</strong> {{ extras.specs.rec.gpu }}</li>
+                        <li><strong>Storage:</strong> {{ extras.specs.rec.storage }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
